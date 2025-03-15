@@ -2,7 +2,7 @@
 
 基於 **ASP.NET Core Web API** 與 **HTML + JavaScript** 的 **任務管理** 及 **記帳管理** 應用程式。提供 API 服務來管理待辦事項與收支記錄，並配有簡單的前端介面。
 
-## 🏗 功能概述
+## 功能概述
 
 ### 任務管理 (Task Manager)
 - 取得所有任務 (`GET /api/tasks`)
