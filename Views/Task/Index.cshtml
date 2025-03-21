@@ -1,0 +1,102 @@
+@{
+    ViewData["Title"] = "Task Manager";
+}
+
+<h1>Task Manager</h1>
+
+<!-- 新增任務 -->
+<input type="text" id="taskInput" placeholder="Enter a new task">
+<button onclick="addTask()">Add Task</button>
+
+<!-- 讀取任務列表 -->
+<button onclick="loadTasks()">Load Tasks</button>
+
+<!-- 版面設計 -->
+<div style="display: flex; gap: 50px;">
+    <div>
+        <h2>Pending Tasks</h2>
+        <ul id="pendingTasks"></ul>
+    </div>
+    <div>
+        <h2>Completed Tasks</h2>
+        <ul id="completedTasks"></ul>
+    </div>
+</div>
+
+<script>
+    const apiUrl = "http://localhost:5174/api/tasks";
+
+    async function addTask() {
+        const taskInput = document.getElementById("taskInput").value;
+        if (!taskInput.trim()) {
+            alert("Please enter a task.");
+            return;
+        }
+
+        try {
+            let response = await fetch(apiUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ title: taskInput, isCompleted: false })
+            });
+
+            if (!response.ok) throw new Error("Failed to add task");
+            document.getElementById("taskInput").value = "";
+            loadTasks();
+        } catch (error) {
+            console.error("Error adding task:", error);
+            alert("Error adding task.");
+        }
+    }
+
+    // 讀取所有任務
+    async function loadTasks() {
+        try {
+            let response = await fetch(apiUrl);
+            if (!response.ok) throw new Error("Failed to load tasks");
+
+            let tasks = await response.json();
+            const pendingTasks = document.getElementById("pendingTasks");
+            const completedTasks = document.getElementById("completedTasks");
+            pendingTasks.innerHTML = "";
+            completedTasks.innerHTML = "";
+
+            tasks.forEach(task => {
+                let li = document.createElement("li");
+                li.innerText = task.title;
+                li.style.cursor = "pointer";
+                li.onclick = () => toggleTaskStatus(task.id, !task.isCompleted);
+
+                if (task.isCompleted) {
+                    li.style.textDecoration = "line-through"; // 已完成的畫刪除線
+                    completedTasks.appendChild(li);
+                } else {
+                    pendingTasks.appendChild(li);
+                }
+            });
+        } catch (error) {
+            console.error("Error loading tasks:", error);
+            alert("Error loading tasks.");
+        }
+    }
+
+    // 切換任務狀態
+    async function toggleTaskStatus(id, newStatus) {
+        try {
+            let response = await fetch(`${apiUrl}/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ isCompleted: newStatus })
+            });
+
+            if (!response.ok) throw new Error("Failed to update task status");
+            loadTasks(); // 重新載入
+        } catch (error) {
+            console.error("Error updating task:", error);
+            alert("Error updating task.");
+        }
+    }
+
+    // 頁面載入時自動讀取任務
+    loadTasks();
+</script>
