@@ -1,1 +1,32 @@
+# 編譯產物
+bin/
+obj/
+out/
+*.dll
+*.exe
+*.app
+*.log
+
+# 使用者設定
+*.user
+*.suo
+.vscode/
+
+# 作業系統暫存檔
 .DS_Store
+Thumbs.db
+
+# 發佈資料夾（如果你有指定）
+publish/
+
+# ASP.NET Core 設定檔（視情況忽略）
+appsettings.Development.json
+
+# Docker（如有）
+.dockerignore
+
+# 排除 secrets（如有）
+secrets.json
+
+# Node.js 前端（如有）
+node_modules/
